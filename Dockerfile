@@ -14,6 +14,7 @@ RUN yum -y install pcre pcre-devel
 RUN yum -y install gdbm gdbm-devel
 RUN yum -y install httpd
 
+RUN yum -y install emacs
 
 RUN echo 'root:password' | chpasswd
 RUN ["useradd", "test"]
@@ -27,10 +28,14 @@ RUN wget  http://peak.telecommunity.com/dist/ez_setup.py
 RUN python ez_setup.py
 RUN easy_install supervisor
 #RUN mkdir /root/lighttpd
-VOLUME /root/lighttpd
+
+VOLUME /root/lighttpd /var/www/html/mv
 
 COPY supervisord.conf /usr/etc/supervisord.conf
 RUN mkdir /root/conf/
-COPY lighttpd.conf /root/conf/lighttpd.conf
+COPY conf/lighttpd.conf /root/conf/lighttpd.conf
+
+COPY script/lighttpd.sh /etc/init.d/lighttpd
+RUN chmod 755 /etc/init.d/lighttpd
 
 CMD ["/usr/bin/supervisord"]
